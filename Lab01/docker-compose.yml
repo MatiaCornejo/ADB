@@ -1,0 +1,64 @@
+version:                      '1'
+services:
+    nodo01:
+        image:                    cassandra:latest
+        container_name:           cluster_cassandra_nodo01
+        hostname:                 nodo01
+        # Configuración de red para cluster
+        networks:
+            cluster_network:
+                ipv4_address:           172.30.0.2
+        # Variables de entorno para configuración
+        environment:
+          - CASSANDRA_SEEDS=nodo01
+          - CLUSTER_NAME=cluster_cassandra
+        # Puetos para comunicación
+        expose:
+          - 9042
+        ports:
+          - 7001:9042
+    nodo02:
+      image:                  cassandra:latest
+      container_name:         cluster_cassandra_nodo02
+      hostname:               nodo02
+      # Configuración de red para cluster
+      networks:
+          cluster_network:
+              ipv4_address:         172.30.0.3
+      # Variables de entorno para configuración
+      environment:
+          - CASSANDRA_SEEDS=nodo01
+          - CLUSTER_NAME=cluster_cassandra
+      # Puetos para comunicación
+      expose:
+          - 9042
+      ports:
+          - 7002:9042
+      depends_on:
+          - nodo01
+    nodo03:
+        image:                    cassandra:latest
+        container_name:       cluster_cassandra_nodo03
+        hostname:             nodo03
+        # Configuración de red para cluster
+        networks:
+            cluster_network:
+                ipv4_address: 172.30.0.4
+        # Variables de entorno para configuración
+        environment:
+            - CASSANDRA_SEEDS=nodo01
+            - CLUSTER_NAME=cluster_cassandra
+        # Puetos para comunicación
+        expose:
+            - 9042
+        ports:
+            - 7003:9042
+        depends_on:
+            - nodo01
+# Configuración de red global
+networks:
+    cluster_network:
+        ipam:
+            driver:           default
+            config:
+                - subnet:     172.30.0.0/16
